@@ -9,3 +9,4 @@ db.once('open', function(){
 
 //Models
 require('./CategoryModel');
+require('./RecipeModel');

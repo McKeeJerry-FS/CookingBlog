@@ -1,5 +1,7 @@
 require('../models/database');
 const Category = require('../models/CategoryModel')
+const Recipe = require('../models/RecipeModel')
+
 
 
 
@@ -13,7 +15,18 @@ exports.homepage = async (req, res) => {
         
         const limitNumber = 5;
         const categories = await Category.find({}).limit(limitNumber);
-        res.render('index', { title: 'Cooking Blog - Home', categories });
+        const latestRecipes = await Recipe.find({}).sort({_id: -1}).limit(limitNumber);
+        const thai = await Recipe.find({ category: 'Thai' });
+        const korean = await Recipe.find({ category: 'Korean' });
+        const american = await Recipe.find({ category: 'American' });
+        const chinese = await Recipe.find({ category: 'Chinese' });
+        const indian = await Recipe.find({ category: 'Indian' });
+        const mexican = await Recipe.find({ category: 'Mexican' });
+        const italian = await Recipe.find({ category: 'Italian' });
+
+        const food = { latestRecipes, thai, korean, chinese, american, indian, mexican, italian }
+
+        res.render('index', { title: 'Cooking Blog - Home', categories, food });
     } catch (error) {
         console.log('err', error);
         res.status(500).send({msg: error.message || 'Error Occurred'})
@@ -32,6 +45,21 @@ exports.exploreCategories = async (req, res) => {
         const limitNumber = 20;
         const categories = await Category.find({}).limit(limitNumber);
         res.render('categories', { title: 'Cooking Blog - Explore Categories', categories });
+    } catch (error) {
+        console.log('err', error);
+        res.status(500).send({msg: error.message || 'Error Occurred'})
+    }
+};
+/**
+ * Get /recipe/:id
+ * Explore Recipe
+ */
+
+exports.exploreRecipe = async (req, res) => {
+    try {
+        let recipeId = req.params.id;
+        const recipe = await Recipe.findById(recipeId);
+        res.render('recipe', { title: 'Cooking Blog - Cooking Blog - Recipe', recipe });
     } catch (error) {
         console.log('err', error);
         res.status(500).send({msg: error.message || 'Error Occurred'})
@@ -81,3 +109,38 @@ exports.exploreCategories = async (req, res) => {
 
 // insertDummyCategoryData();
 
+
+
+// async function insertDummyRecipeData() {
+//         try {
+//             await Recipe.insertMany([
+//                 {
+//                     "name":"BulGoGi (Korean BBQ Beef)",
+//                     "description": "Bulgogi, sometimes known as Korean BBQ beef, is a dish of thinly sliced grilled steak that has been marinated in a sweet soy, sesame, and garlic sauce. If you want to spice it up, serve the beef in lettuce cups with rice and hot pepper paste (gochujang).",
+//                     "email": "jerry@gmail.com",
+//                     "ingredients": [
+//                         "Steak", "Soy Sauce", "Sugar", "Green Onions", "Garlic", "Sesame Seeds", "Sesame Oil", "Pepper"
+//                     ],
+//                     "category": "Korean",
+//                     "image": "korean-food.jpg"
+//                 },
+//                 {
+//                     "name":"Shrimp Alfredo Pasta",
+//                     "description": "A wonderful shrimp pasta dish! I came up with this on my own one night. You can change the amount of ingredients to your taste.",
+//                     "email": "jerry@gmail.com",
+//                     "ingredients": [
+//                         "1 (16 ounce) jar Alfredo-style pasta sauce", "1 (16 ounce) package angel hair pasta", "2 pounds fresh shrimp, peeled and deveined", "1 cup butter, melted", "½ small green bell pepper, diced", "½ small red onion, finely chopped", "1 teaspoon garlic powder", "½ teaspoon ground cumin"
+//                     ],
+//                     "category": "Italian",
+//                     "image": "italian-food.jpg"
+//                 },
+                
+                
+//             ]);
+    
+//         } catch (error) {
+//             console.log('err', + error);
+//         }
+//     };
+
+//     insertDummyRecipeData();
