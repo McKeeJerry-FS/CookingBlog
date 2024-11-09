@@ -50,6 +50,24 @@ exports.exploreCategories = async (req, res) => {
         res.status(500).send({msg: error.message || 'Error Occurred'})
     }
 };
+
+/**
+ * Get /categories/:id
+ * Explore CategoriesById
+ */
+
+exports.exploreCategoriesById = async (req, res) => {
+    try {
+        let categoryId = req.params.id;
+        const limitNumber = 20;
+        const categoryById = await Recipe.find({ 'category': categoryId}).limit(limitNumber);
+        res.render('categories', { title: 'Cooking Blog - Explore Categories', categoryById });
+    } catch (error) {
+        console.log('err', error);
+        res.status(500).send({msg: error.message || 'Error Occurred'})
+    }
+};
+
 /**
  * Get /recipe/:id
  * Explore Recipe
@@ -59,7 +77,7 @@ exports.exploreRecipe = async (req, res) => {
     try {
         let recipeId = req.params.id;
         const recipe = await Recipe.findById(recipeId);
-        res.render('recipe', { title: 'Cooking Blog - Cooking Blog - Recipe', recipe });
+        res.render('recipe', { title: 'Cooking Blog - Recipe', recipe });
     } catch (error) {
         console.log('err', error);
         res.status(500).send({msg: error.message || 'Error Occurred'})
@@ -67,6 +85,52 @@ exports.exploreRecipe = async (req, res) => {
 };
 
 
+/**
+ * Post /search
+ * Search Recipe
+ */
+
+exports.searchRecipe = async(req, res) => {
+    // searchTerm
+    try {
+        let searchTerm = req.body.searchTerm;
+        let recipe = await Recipe.find({ $text: { $search: searchTerm, $diacriticSensitive: true }});
+        //res.json(recipe)
+
+        res.render('search', { title: 'Cooking Blog - Search', recipe });
+    } catch (error) {
+        res.statu(500).send({ msg: error.message || "Error Occurred" })
+    }
+}
+
+/**
+ * Get /explore-latest
+ * Explore Latest
+ */
+exports.exploreLatest = async(req, res) => {
+    try {
+        const limitNumber = 20;
+        const recipe = await Recipe.find({  }).sort({ _id: -1 }).limit(limitNumber);
+        res.render('explore-latest', { title: 'Cooking Blog - Explore Latest', recipe})
+    } catch (error) {
+        res.statu(500).send({ msg: error.message || "Error Occurred" })
+
+    }
+}
+
+/**
+ * Get /submit-recipe
+ * Submit Recipe
+ */
+exports.submitRecipe = async(req, res) => {
+    try {
+        
+        res.render('submit-recipe', { title: 'Cooking Blog - Submit Recipe'})
+    } catch (error) {
+        res.statu(500).send({ msg: error.message || "Error Occurred" })
+
+    }
+}
 
 
 // async function insertDummyCategoryData() {
